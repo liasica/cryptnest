@@ -1,16 +1,16 @@
 import './style.css';
 import {
-  Archive, Box, Check, CheckCheck, CircleAlert, CodeXml, Copy, Download, Eye, EyeOff,
+  Archive, Box, Check, CircleAlert, CodeXml, Copy, Download, Eye, EyeOff,
   File, FileCheck2, Files, FileText, FolderLock, FolderUp, Info, KeyRound, LockKeyhole,
-  Monitor, Moon, Plus, ShieldCheck, Sun, Sparkles, TextCursorInput, UnlockKeyhole, X,
+  Monitor, Moon, Plus, ShieldCheck, Sun, TextCursorInput, UnlockKeyhole, X,
   createElement, createIcons,
 } from 'lucide';
 import CryptoWorker from './crypto.worker?worker&inline';
-import { decodeCiphertext, encodeCiphertext, MAX_CIPHER_BYTES, MAX_FILE_BYTES, MAX_FILES, MAX_TEXT_BYTES, uniquePath, validatePassword } from './crypto';
+import { decodeCiphertext, encodeCiphertext, identifyCiphertext, MAX_CIPHER_BYTES, MAX_FILE_BYTES, MAX_FILES, MAX_TEXT_BYTES, parseCopiedCiphertext, uniquePath, validatePassword } from './crypto';
 import type { ArchiveInput, JobRequest, JobResponse } from './crypto';
 
 const initialHTML = '<!doctype html>\n' + document.documentElement.outerHTML;
-const icons = { Archive, Box, Check, CheckCheck, CircleAlert, CodeXml, Copy, Download, Eye, EyeOff, File, FileCheck2, Files, FileText, FolderLock, FolderUp, Info, KeyRound, LockKeyhole, Monitor, Moon, Plus, ShieldCheck, Sun, Sparkles, TextCursorInput, UnlockKeyhole, X };
+const icons = { Archive, Box, Check, CircleAlert, CodeXml, Copy, Download, Eye, EyeOff, File, FileCheck2, Files, FileText, FolderLock, FolderUp, Info, KeyRound, LockKeyhole, Monitor, Moon, Plus, ShieldCheck, Sun, TextCursorInput, UnlockKeyhole, X };
 createIcons({ icons });
 
 function element<T extends HTMLElement = HTMLElement>(id: string): T {
@@ -55,7 +55,7 @@ const folderInput = element<HTMLInputElement>('folder-input');
 const dropzone = element('dropzone');
 const sourceText = element<HTMLTextAreaElement>('source-text');
 const password = element<HTMLInputElement>('password');
-const confirmation = element<HTMLInputElement>('confirm-password');
+const copyPassword = element<HTMLInputElement>('copy-password');
 const resultText = element<HTMLTextAreaElement>('result-text');
 const resultPanel = element('result-panel');
 const helpDialog = element<HTMLDialogElement>('help-dialog');
@@ -76,6 +76,9 @@ let worker: Worker | null = null;
 let operation = 0;
 let resultBlob: Blob | null = null;
 let resultFilename = '';
+let resultCopyText = '';
+let resultPassword: string | null = null;
+let needsPassword = false;
 let toastTimer: ReturnType<typeof setTimeout>;
 
 function replaceIcon(id: string, icon: typeof LockKeyhole): void {
@@ -100,6 +103,11 @@ function showError(message: string, field?: HTMLElement): void {
 function invalidateResult(): void {
   resultBlob = null;
   resultFilename = '';
+  resultCopyText = '';
+  resultPassword = null;
+  copyPassword.checked = false;
+  element('copy-options').hidden = true;
+  element('copy-password-note').hidden = true;
   resultText.value = '';
   resultPanel.hidden = true;
   element('error-message').hidden = true;
@@ -136,6 +144,7 @@ function renderFiles(): void {
       selectionVersion++;
       invalidateResult();
       renderFiles();
+      void refreshPasswordRequirement();
     });
     row.append(createElement(File, { 'aria-hidden': 'true' }), name, size, remove);
     list.append(row);
@@ -148,22 +157,11 @@ function clearFiles(): void {
   folderInput.value = '';
   selectionVersion++;
   renderFiles();
-}
-
-function updateStrength(): void {
-  const display = element('password-strength');
-  display.hidden = mode === 'decrypt' || password.value.length === 0;
-  if (display.hidden) return;
-  const value = password.value;
-  const categories = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^a-zA-Z0-9]/].filter((pattern) => pattern.test(value)).length;
-  const level = value.length < 8 ? 1 : value.length < 12 ? 2 : value.length >= 16 && categories >= 3 ? 4 : 3;
-  display.className = `password-strength level-${level}`;
-  element('strength-label').textContent = ['较弱', '一般', '较强', '强'][level - 1];
+  void refreshPasswordRequirement();
 }
 
 function setPasswordVisibility(visible: boolean): void {
   password.type = visible ? 'text' : 'password';
-  confirmation.type = visible ? 'text' : 'password';
   const toggle = element<HTMLButtonElement>('toggle-password');
   toggle.setAttribute('aria-label', visible ? '隐藏密码' : '显示密码');
   toggle.setAttribute('aria-pressed', String(visible));
@@ -175,13 +173,13 @@ function renderFlow(): void {
   const files = source === 'files';
   const stages = encrypting
     ? files
-      ? [{ icon: Files, title: '选择文件', detail: '保留文件名与目录' }, { icon: Archive, title: '自动打包', detail: '生成 ZIP 归档' }, { icon: LockKeyhole, title: '密码加密', detail: '下载 .cryptnest 文件' }]
-      : [{ icon: FileText, title: '输入文本', detail: '保留文本与换行' }, { icon: LockKeyhole, title: '密码加密', detail: '生成 CryptNest 密文' }, { icon: Copy, title: '保存结果', detail: '复制密文或下载文件' }]
-    : [{ icon: files ? FolderLock : FileText, title: files ? '选择加密包' : '粘贴密文', detail: files ? 'CryptNest 加密文件' : '完整的 CryptNest 密文' }, { icon: KeyRound, title: '输入原密码', detail: '验证密码与内容完整性' }, { icon: UnlockKeyhole, title: '还原内容', detail: '下载归档或复制文本' }];
+      ? [{ icon: Files, title: '选择文件', detail: '保留文件名与目录' }, { icon: Archive, title: '自动打包', detail: '生成 ZIP 归档' }, { icon: LockKeyhole, title: '随机密钥加密', detail: '下载 .cryptnest 文件' }]
+      : [{ icon: FileText, title: '输入文本', detail: '保留文本与换行' }, { icon: LockKeyhole, title: '随机密钥加密', detail: '生成无前缀密文' }, { icon: Copy, title: '保存结果', detail: '复制密文或下载文件' }]
+    : [{ icon: files ? FolderLock : FileText, title: files ? '选择加密包' : '粘贴密文', detail: files ? 'CryptNest 加密文件' : '完整的编码字符串' }, { icon: KeyRound, title: needsPassword ? '输入原密码' : '还原解密密钥', detail: needsPassword ? '验证密码与内容完整性' : '读取结果中封装的密钥' }, { icon: UnlockKeyhole, title: '还原内容', detail: '下载归档或复制文本' }];
   element('flow-title').textContent = encrypting ? (files ? '文件的加密流程' : '文本的加密流程') : '内容的解密流程';
   element('flow-description').textContent = encrypting
-    ? (files ? '文件与目录结构一起打包，整个归档使用密码加密。' : '文本使用密码加密，生成可复制、可下载的密文。')
-    : '使用加密时的密码，还原文件归档或原始文本。';
+    ? (files ? '文件与目录结构一起打包，整个归档使用随机密钥加密。' : '文本使用随机密钥加密，生成可复制、可下载的密文。')
+    : '应用还原封装后的密钥，再解密文件归档或原始文本。';
   const list = element<HTMLOListElement>('flow-list');
   list.replaceChildren();
   for (const [index, stage] of stages.entries()) {
@@ -200,7 +198,27 @@ function renderFlow(): void {
     row.append(icon, content, order);
     list.append(row);
   }
-  element('format-note').textContent = '使用 CryptNest 和原密码解密加密包。';
+  element('format-note').textContent = '持有完整加密结果，即可使用本应用解密。';
+}
+
+async function refreshPasswordRequirement(): Promise<void> {
+  const version = selectionVersion;
+  let required = false;
+  try {
+    if (mode === 'decrypt' && source === 'text') {
+      required = identifyCiphertext(decodeCiphertext(sourceText.value)) === 'password';
+    } else if (mode === 'decrypt' && selected.length === 1) {
+      const data = await selected[0].file.slice(0, 8).arrayBuffer();
+      if (version !== selectionVersion || mode !== 'decrypt' || source !== 'files') return;
+      required = identifyCiphertext(data) === 'password';
+    }
+  } catch {
+    required = false;
+  }
+  needsPassword = required;
+  element('password-section').hidden = !required;
+  if (!required) password.value = '';
+  renderFlow();
 }
 
 function renderMode(): void {
@@ -228,15 +246,9 @@ function renderMode(): void {
   dropzone.setAttribute('aria-label', encrypting ? '选择或拖入文件' : '选择或拖入 CryptNest 加密包');
   replaceIcon('drop-icon', encrypting ? FolderUp : FolderLock);
   element('text-label').textContent = encrypting ? '需要加密的文本' : '需要解密的密文';
-  sourceText.placeholder = encrypting ? '在这里输入需要加密的文本……' : '粘贴以 cryptnest:v1: 开头的完整密文……';
-  element('text-hint').textContent = encrypting ? '保留原始文本与换行' : '支持粘贴分行的完整密文';
-  element('password-heading').textContent = encrypting ? '设置加密密码' : '输入解密密码';
-  element('password-label').textContent = encrypting ? '加密密码' : '原密码';
-  password.autocomplete = encrypting ? 'new-password' : 'off';
-  element('confirm-group').hidden = !encrypting;
-  element('generate-password').hidden = !encrypting;
-  element('password-grid').classList.toggle('single', !encrypting);
-  element('password-note').textContent = encrypting ? '建议使用至少 12 位密码。密码无法找回。' : '密码区分大小写与空格，请输入加密时的原密码。';
+  sourceText.placeholder = encrypting ? '在这里输入需要加密的文本……' : '粘贴完整密文，或包含密码的复制内容……';
+  element('text-hint').textContent = encrypting ? '保留原始文本与换行' : '支持分行密文与附带密码的内容';
+  element('key-info').hidden = !encrypting;
   element('submit-label').textContent = encrypting ? (source === 'files' ? '加密并生成文件' : '加密文本') : (source === 'files' ? '解密并还原内容' : '解密文本');
   replaceIcon('submit-icon', encrypting ? LockKeyhole : UnlockKeyhole);
   element('output-hint').textContent = encrypting
@@ -245,7 +257,7 @@ function renderMode(): void {
   fileInput.multiple = encrypting;
   fileInput.accept = encrypting ? '' : '.cryptnest';
   renderFlow();
-  updateStrength();
+  void refreshPasswordRequirement();
 }
 
 function addFiles(incoming: { file: File; path: string }[]): void {
@@ -266,6 +278,7 @@ function addFiles(incoming: { file: File; path: string }[]): void {
   selectionVersion++;
   invalidateResult();
   renderFiles();
+  void refreshPasswordRequirement();
 }
 
 fileInput.addEventListener('change', () => {
@@ -346,7 +359,6 @@ document.querySelectorAll<HTMLButtonElement>('button[data-mode]').forEach((butto
     clearFiles();
     sourceText.value = '';
     password.value = '';
-    confirmation.value = '';
     setPasswordVisibility(false);
     invalidateResult();
     element('text-count').textContent = '0 个字符';
@@ -363,22 +375,28 @@ document.querySelectorAll<HTMLButtonElement>('button[data-source]').forEach((but
 });
 sourceText.addEventListener('input', () => {
   invalidateResult();
+  if (mode === 'decrypt') {
+    const copied = parseCopiedCiphertext(sourceText.value);
+    if (copied.password !== undefined) {
+      try {
+        const format = identifyCiphertext(decodeCiphertext(copied.ciphertext));
+        sourceText.value = copied.ciphertext;
+        if (format === 'password') { password.value = copied.password; setPasswordVisibility(false); }
+      } catch {}
+    }
+  }
   element('text-count').textContent = `${sourceText.value.length.toLocaleString('zh-CN')} 个字符`;
+  void refreshPasswordRequirement();
 });
-password.addEventListener('input', () => { invalidateResult(); updateStrength(); });
-confirmation.addEventListener('input', invalidateResult);
+password.addEventListener('input', invalidateResult);
 element('toggle-password').addEventListener('click', () => { setPasswordVisibility(password.type === 'password'); });
-element('generate-password').addEventListener('click', () => {
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
-  const random = crypto.getRandomValues(new Uint8Array(20));
-  const generated = Array.from(random, (value) => alphabet[value & 63]).join('');
-  password.value = generated;
-  confirmation.value = generated;
-  setPasswordVisibility(true);
-  invalidateResult();
-  updateStrength();
-  showToast('密码已生成，请保存后再加密。');
-});
+
+function updateCopyContent(): void {
+  const includePassword = copyPassword.checked && resultPassword !== null;
+  resultText.value = includePassword ? `${resultCopyText}\n密码：${resultPassword}` : resultCopyText;
+  element('copy-password-note').hidden = !includePassword;
+}
+copyPassword.addEventListener('change', updateCopyContent);
 
 function setBusy(value: boolean): void {
   busy = value;
@@ -416,14 +434,16 @@ function displayResult(message: Extract<JobResponse, { type: 'result' }>): void 
   element('result-description').textContent = `${resultFilename} · ${formatBytes(message.data.byteLength)}`;
   resultText.hidden = !text;
   element('copy-result').hidden = !text;
-  resultText.value = text ? (encrypted ? encodeCiphertext(message.data) : new TextDecoder('utf-8', { fatal: true }).decode(message.data)) : '';
+  resultCopyText = text ? (encrypted ? encodeCiphertext(message.data) : new TextDecoder('utf-8', { fatal: true }).decode(message.data)) : '';
+  resultPassword = text && encrypted ? message.password ?? null : null;
+  copyPassword.checked = false;
+  element('copy-options').hidden = resultPassword === null;
+  updateCopyContent();
   element('download-label').textContent = encrypted ? '下载加密包' : text ? '下载文本' : '下载 ZIP 文件';
   element('copy-label').textContent = encrypted ? '复制密文' : '复制文本';
   resultPanel.hidden = false;
   password.value = '';
-  confirmation.value = '';
   setPasswordVisibility(false);
-  updateStrength();
 }
 
 form.addEventListener('submit', async (event) => {
@@ -434,8 +454,6 @@ form.addEventListener('submit', async (event) => {
     if (!crypto.subtle || !window.Worker) throw new Error('浏览器不支持加密功能，请使用最新版浏览器并通过 HTTPS 或离线版打开。');
     if (source === 'files' && selected.length === 0) { showError('请先选择文件。', dropzone); return; }
     if (source === 'text' && sourceText.value.length === 0) { showError('请先输入需要处理的文本。', sourceText); return; }
-    try { validatePassword(password.value); } catch (error) { showError((error as Error).message, password); return; }
-    if (mode === 'encrypt' && password.value !== confirmation.value) { showError('两次输入的密码不一致，请重新确认。', confirmation); return; }
     if (mode === 'encrypt' && source === 'text' && new TextEncoder().encode(sourceText.value).byteLength > MAX_TEXT_BYTES) {
       showError('文本不能超过 1 MiB。', sourceText); return;
     }
@@ -449,10 +467,20 @@ form.addEventListener('submit', async (event) => {
     let transfer: ArrayBuffer[];
     if (mode === 'decrypt') {
       const data = source === 'text' ? decodeCiphertext(text) : await files[0].file.arrayBuffer();
+      if (id !== operation) return;
+      if (identifyCiphertext(data) === 'password') {
+        try { validatePassword(secret); } catch (error) {
+          needsPassword = true;
+          setBusy(false);
+          element('password-section').hidden = false;
+          showError((error as Error).message, password);
+          return;
+        }
+      }
       request = { action: 'decrypt', password: secret, data };
       transfer = [data];
     } else if (source === 'text') {
-      request = { action: 'encrypt', password: secret, text };
+      request = { action: 'encrypt', text };
       transfer = [];
     } else {
       const archive: ArchiveInput[] = [];
@@ -462,7 +490,7 @@ form.addEventListener('submit', async (event) => {
         archive.push({ path: item.path, data, modified: item.file.lastModified });
         updateProgress(`正在读取文件（${index + 1}/${files.length}）……`, 5 + Math.round(20 * (index + 1) / files.length));
       }
-      request = { action: 'encrypt', password: secret, files: archive };
+      request = { action: 'encrypt', files: archive };
       transfer = archive.map((file) => file.data);
     }
     if (id !== operation) return;
@@ -484,7 +512,7 @@ form.addEventListener('submit', async (event) => {
       showError('处理失败，请刷新页面或减小文件大小后重试。');
     };
     current.postMessage(request, transfer);
-    request.password = '';
+    if (request.action === 'decrypt') request.password = '';
   } catch (error) {
     cancelOperation();
     showError(error instanceof Error ? error.message : '处理失败，请重试。');
@@ -505,7 +533,7 @@ element('download-result').addEventListener('click', () => { if (resultBlob) dow
 element('copy-result').addEventListener('click', async () => {
   try {
     await navigator.clipboard.writeText(resultText.value);
-    showToast('已复制。');
+    showToast(copyPassword.checked && resultPassword !== null ? '密文和密码已复制。' : '已复制。');
   } catch {
     resultText.focus();
     resultText.select();
@@ -525,12 +553,10 @@ helpDialog.addEventListener('click', (event) => {
 window.addEventListener('pagehide', () => {
   cancelOperation();
   password.value = '';
-  confirmation.value = '';
   sourceText.value = '';
   clearFiles();
   invalidateResult();
   element('text-count').textContent = '0 个字符';
-  updateStrength();
 });
 
 renderMode();

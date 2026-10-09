@@ -44,8 +44,8 @@ scope.onmessage = async (event) => {
       if (sensitive.byteLength === 0 || sensitive.byteLength > MAX_TEXT_BYTES) throw new Error('请输入内容不超过 1 MiB 的文本。');
       kind = 'text';
     }
-    const data = await encryptContent(sensitive, kind, request.password, progress);
-    scope.postMessage({ type: 'result', kind, data, encrypted: true }, [data]);
+    const result = await encryptContent(sensitive, kind, progress);
+    scope.postMessage({ type: 'result', kind, ...result, encrypted: true }, [result.data]);
   } catch (error) {
     scope.postMessage({ type: 'error', message: error instanceof Error ? error.message : '处理失败，请重新选择内容后重试。' });
   } finally {
@@ -53,6 +53,6 @@ scope.onmessage = async (event) => {
     if (request.action === 'encrypt' && 'files' in request) {
       for (const file of request.files) new Uint8Array(file.data).fill(0);
     }
-    request.password = '';
+    if (request.action === 'decrypt') request.password = '';
   }
 };

@@ -19,7 +19,7 @@
           : preference;
       })();
     </script>
-    <meta name="description" content="CryptNest：浏览器内的文件与文本加密工具，支持密码加密、解密、文件夹打包和离线使用。" />
+    <meta name="description" content="CryptNest：浏览器内的文件与文本加密工具，支持随机密钥加密、自动解密、文件夹打包和离线使用。" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230c1720'/%3E%3Cpath d='M32 9 52 20v24L32 55 12 44V20Z' fill='none' stroke='%2379efbd' stroke-width='3'/%3E%3Crect x='23' y='28' width='18' height='16' rx='4' fill='%2379efbd'/%3E%3Cpath d='M26 28v-5a6 6 0 0 1 12 0v5' fill='none' stroke='%2379efbd' stroke-width='3'/%3E%3C/svg%3E" />
     <title>CryptNest · 本地加密工作台</title>
   </head>
@@ -50,7 +50,7 @@
         <div>
           <div class="eyebrow"><span class="eyebrow-line"></span>CRYPTNEST WORKSPACE</div>
           <h1>本地加密<span>工作台</span></h1>
-          <p>拖入文件或输入文本，使用密码加密与还原。</p>
+          <p>拖入文件或输入文本，在当前浏览器加密与还原。</p>
         </div>
         <div class="local-label"><i data-lucide="monitor" aria-hidden="true"></i><span>处理位置<strong>当前浏览器</strong></span></div>
       </div>
@@ -100,34 +100,25 @@
                 <div class="text-meta"><span id="text-hint">保留原始文本与换行</span><span id="text-count">0 个字符</span></div>
               </div>
 
-              <div class="password-section">
-                <div class="section-heading password-heading">
-                  <h2><span class="step-number">02</span><span id="password-heading">设置加密密码</span></h2>
-                  <button class="text-button generate-button" id="generate-password" type="button"><i data-lucide="sparkles" aria-hidden="true"></i>生成密码</button>
-                </div>
-                <div class="password-grid" id="password-grid">
-                  <div class="field-group">
-                    <label for="password" id="password-label">加密密码</label>
-                    <div class="password-field"><i data-lucide="key-round" aria-hidden="true"></i><input id="password" type="password" autocomplete="new-password" placeholder="输入你的密码" maxlength="1024" aria-describedby="password-note" /><button id="toggle-password" type="button" class="icon-button" aria-label="显示密码" aria-pressed="false"><i data-lucide="eye" aria-hidden="true"></i></button></div>
-                  </div>
-                  <div class="field-group" id="confirm-group">
-                    <label for="confirm-password">确认密码</label>
-                    <div class="password-field"><i data-lucide="check-check" aria-hidden="true"></i><input id="confirm-password" type="password" autocomplete="new-password" placeholder="再次输入密码" maxlength="1024" /></div>
-                  </div>
-                </div>
-                <div class="password-meta"><p id="password-note">建议使用至少 12 位密码。密码无法找回。</p><div class="password-strength" id="password-strength" hidden><span class="strength-bars" aria-hidden="true"><b></b><b></b><b></b><b></b></span><span id="strength-label"></span></div></div>
+              <div class="key-info" id="key-info"><i data-lucide="key-round" aria-hidden="true"></i><div><strong>随机密钥，自动解密</strong><p>结果附带封装后的解密密钥，持有完整加密结果即可解密。</p></div></div>
+
+              <div class="password-section" id="password-section" hidden>
+                <div class="section-heading password-heading"><h2><span class="step-number">02</span>输入原密码</h2></div>
+                <div class="field-group"><label for="password">此加密包需要密码</label><div class="password-field"><i data-lucide="key-round" aria-hidden="true"></i><input id="password" type="password" autocomplete="off" placeholder="输入加密时的原密码" maxlength="1024" aria-describedby="password-note" /><button id="toggle-password" type="button" class="icon-button" aria-label="显示密码" aria-pressed="false"><i data-lucide="eye" aria-hidden="true"></i></button></div></div>
+                <div class="password-meta"><p id="password-note">密码区分大小写与空格。</p></div>
               </div>
 
               <div class="message error-message" id="error-message" role="alert" hidden><i data-lucide="circle-alert" aria-hidden="true"></i><span id="error-text"></span></div>
               <div class="progress-section" id="progress-section" role="status" aria-live="polite" hidden><div class="progress-heading"><span id="progress-label">准备处理……</span><button type="button" class="text-button" id="cancel-button">取消</button></div><progress id="progress-bar" max="100" value="5" aria-label="处理进度"></progress></div>
 
-              <button class="submit-button" id="submit-button" type="submit"><i data-lucide="lock-keyhole" id="submit-icon" aria-hidden="true"></i><span id="submit-label">加密并生成文件</span><span class="button-shortcut" aria-hidden="true">AES-256</span></button>
+              <button class="submit-button" id="submit-button" type="submit"><i data-lucide="lock-keyhole" id="submit-icon" aria-hidden="true"></i><span id="submit-label">加密并生成文件</span><span class="button-shortcut" aria-hidden="true">XChaCha20</span></button>
               <div class="output-hint"><i data-lucide="file-check-2" aria-hidden="true"></i><span id="output-hint">输出 .cryptnest 加密包，解密后得到 ZIP 文件</span></div>
 
               <section class="result-panel" id="result-panel" aria-label="处理结果" aria-live="polite" hidden>
                 <div class="result-heading"><span class="result-check"><i data-lucide="check" aria-hidden="true"></i></span><div><h3 id="result-title">加密完成</h3><p id="result-description"></p></div></div>
                 <label for="result-text" class="sr-only">处理结果文本</label><textarea class="result-text" id="result-text" readonly spellcheck="false" hidden></textarea>
-                <div class="result-actions"><button class="result-download" id="download-result" type="button"><i data-lucide="download" aria-hidden="true"></i><span id="download-label">下载加密包</span></button><button class="copy-button" id="copy-result" type="button" hidden><i data-lucide="copy" aria-hidden="true"></i><span id="copy-label">复制结果</span></button></div>
+                <div class="result-actions"><button class="result-download" id="download-result" type="button"><i data-lucide="download" aria-hidden="true"></i><span id="download-label">下载加密包</span></button><button class="copy-button" id="copy-result" type="button" hidden><i data-lucide="copy" aria-hidden="true"></i><span id="copy-label">复制结果</span></button><label class="copy-password-option" id="copy-options" hidden><input id="copy-password" type="checkbox" aria-describedby="copy-password-note" />同时复制密码</label></div>
+                <p class="copy-password-note" id="copy-password-note" hidden>密码以明文附在密文后。</p>
               </section>
             </div>
           </form>
@@ -135,20 +126,20 @@
 
         <aside class="info-panel" aria-label="处理方式与文件格式">
           <div class="info-top"><span>处理方式</span><span class="info-code">LOCAL / 01</span></div>
-          <div class="encryption-visual" aria-hidden="true"><div class="visual-grid"></div><div class="orbit orbit-outer"></div><div class="orbit orbit-middle"></div><div class="orbit orbit-inner"></div><span class="orbit-node node-one"></span><span class="orbit-node node-two"></span><div class="visual-core"><i data-lucide="shield-check"></i></div><span class="visual-caption">AES<span>256</span></span></div>
-          <div class="info-intro"><h2 id="flow-title">文件的加密流程</h2><p id="flow-description">文件与目录结构一起打包，整个归档使用密码加密。</p></div>
-          <ol class="flow-list" id="flow-list"><li><span class="flow-icon"><i data-lucide="files" aria-hidden="true"></i></span><span>选择文件<strong>保留文件名与目录</strong></span><span class="flow-order">01</span></li><li><span class="flow-icon"><i data-lucide="archive" aria-hidden="true"></i></span><span>自动打包<strong>生成 ZIP 归档</strong></span><span class="flow-order">02</span></li><li><span class="flow-icon"><i data-lucide="lock-keyhole" aria-hidden="true"></i></span><span>密码加密<strong>下载 .cryptnest 文件</strong></span><span class="flow-order">03</span></li></ol>
-          <div class="format-note"><i data-lucide="info" aria-hidden="true"></i><p id="format-note">使用 CryptNest 和原密码解密加密包。</p></div>
-          <div class="info-footer"><span>加密算法</span><strong>AES-256-GCM</strong></div>
+          <div class="encryption-visual" aria-hidden="true"><div class="visual-grid"></div><div class="orbit orbit-outer"></div><div class="orbit orbit-middle"></div><div class="orbit orbit-inner"></div><span class="orbit-node node-one"></span><span class="orbit-node node-two"></span><div class="visual-core"><i data-lucide="shield-check"></i></div><span class="visual-caption">XChaCha<span>20</span></span></div>
+          <div class="info-intro"><h2 id="flow-title">文件的加密流程</h2><p id="flow-description">文件与目录结构一起打包，整个归档使用随机密钥加密。</p></div>
+          <ol class="flow-list" id="flow-list"><li><span class="flow-icon"><i data-lucide="files" aria-hidden="true"></i></span><span>选择文件<strong>保留文件名与目录</strong></span><span class="flow-order">01</span></li><li><span class="flow-icon"><i data-lucide="archive" aria-hidden="true"></i></span><span>自动打包<strong>生成 ZIP 归档</strong></span><span class="flow-order">02</span></li><li><span class="flow-icon"><i data-lucide="lock-keyhole" aria-hidden="true"></i></span><span>随机密钥加密<strong>下载 .cryptnest 文件</strong></span><span class="flow-order">03</span></li></ol>
+          <div class="format-note"><i data-lucide="info" aria-hidden="true"></i><p id="format-note">持有完整加密结果，即可使用本应用解密。</p></div>
+          <div class="info-footer"><span>加密算法</span><strong>XChaCha20-Poly1305</strong></div>
         </aside>
       </div>
 
-      <footer class="page-footer"><span>CryptNest<span class="footer-divider">/</span>文件与文本加密</span><div><a href="https://github.com/liasica/cryptnest/blob/master/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a><span class="footer-divider">/</span><span>v1.0.0</span></div></footer>
+      <footer class="page-footer"><span>CryptNest<span class="footer-divider">/</span>文件与文本加密</span><div><a href="https://github.com/liasica/cryptnest/blob/master/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a><span class="footer-divider">/</span><span>v2.0.0</span></div></footer>
     </main>
 
     <dialog id="help-dialog" class="help-dialog" aria-labelledby="help-title">
       <div class="dialog-heading"><h2 id="help-title">使用说明</h2><button class="icon-button" id="close-help" type="button" aria-label="关闭使用说明"><i data-lucide="x" aria-hidden="true"></i></button></div>
-      <div class="help-content"><section><h3>加密文件</h3><p>选择或拖入文件、文件夹，设置并确认密码，点击「加密并生成文件」。下载得到的 .cryptnest 加密包。</p></section><section><h3>解密文件</h3><p>切换到「解密」，选择 .cryptnest 文件并输入原密码。文件归档解密后下载为 ZIP；文本内容解密后可以复制或下载。</p></section><section><h3>加密与解密文本</h3><p>选择「文本」并输入内容。加密结果以 cryptnest:v1: 开头，可复制或下载。解密时粘贴完整密文并输入原密码。</p></section><section><h3>离线使用</h3><p>点击「下载离线版」，保存 HTML 文件后直接用浏览器打开。离线版包含应用所需的全部代码。</p></section><div class="help-limit"><i data-lucide="info" aria-hidden="true"></i><p>一次最多加密 1,000 个文件，总大小不超过 100 MiB。文本上限为 1 MiB。密码区分大小写与空格，无法找回。</p></div></div>
+      <div class="help-content"><section><h3>加密文件</h3><p>选择或拖入文件、文件夹，点击「加密并生成文件」，下载 .cryptnest 加密包。应用自动生成随机密钥，并把封装后的密钥写入结果。</p></section><section><h3>解密文件</h3><p>切换到「解密」，选择 .cryptnest 文件并点击解密。文件归档下载为 ZIP；文本内容可以复制或下载。密码加密包需要输入原密码。</p></section><section><h3>加密与解密文本</h3><p>选择「文本」并输入内容。加密结果为无前缀的编码字符串，可复制或下载。勾选「同时复制密码」后，复制内容会在末尾附带密码。解密时可直接粘贴完整复制内容。</p></section><section><h3>解密规则</h3><p>应用使用固定规则还原结果中封装的密钥，再解密内容。固定规则包含在开源代码中，完整加密结果的持有者可直接解密。</p></section><section><h3>离线使用</h3><p>点击「下载离线版」，保存 HTML 文件后直接用浏览器打开。离线版包含应用所需的全部代码。</p></section><div class="help-limit"><i data-lucide="info" aria-hidden="true"></i><p>一次最多加密 1000 个文件，总大小不超过 100 MiB。文本上限为 1 MiB。</p></div></div>
     </dialog>
     <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
     <script type="module" src="/src/main.ts"></script>

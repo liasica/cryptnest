@@ -116,6 +116,10 @@ h1 > span:not(.heading-period) { color: #9cb1c3; font-weight: 400; }
 .source-text::placeholder { color: #728495; }
 .source-text:focus { border-color: var(--accent); }
 .text-meta { display: flex; justify-content: space-between; gap: 16px; font-size: .75rem; color: #8699a8; margin-top: 8px; }
+.key-info { margin-top: 24px; padding: 15px; display: flex; align-items: flex-start; gap: 12px; border: 1px solid var(--line); border-radius: 6px; background: color-mix(in srgb, var(--accent) 6%, transparent); }
+.key-info > svg { width: 19px; height: 19px; margin-top: 2px; color: var(--accent); }
+.key-info strong { font-size: .875rem; font-weight: 500; }
+.key-info p { margin: 5px 0 0; font-size: .8125rem; color: var(--muted); line-height: 1.8; }
 .password-section { margin-top: 28px; }
 .password-heading { margin-bottom: 19px; }
 .text-button { border: 0; padding: 3px 0; background: none; font-size: .8125rem; color: #94bcaa; }
@@ -169,6 +173,9 @@ progress::-moz-progress-bar { background: var(--accent); }
 .result-download:hover { background: #a7f8d5; }
 .copy-button { background: #1a3b2d; color: #bee7ce; border: 1px solid #416953; }
 .copy-button:hover { background: #29533c; }
+.copy-password-option { display: inline-flex; align-items: center; gap: 7px; padding: 9px 2px; cursor: pointer; font-size: .875rem; }
+.copy-password-option input { width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
+.copy-password-note { font-size: .8125rem; color: var(--muted); margin: 12px 0 0; line-height: 1.7; }
 .result-download svg, .copy-button svg { width: 16px; height: 16px; }
 .result-text { width: 100%; margin-top: 16px; min-height: 130px; resize: vertical; border: 1px solid #3c6553; border-radius: 5px; background: #0a1e17; color: #d4e8dd; padding: 12px; font-family: 'SFMono-Regular', Consolas, 'PingFang SC', monospace; font-size: .875rem; line-height: 1.8; overflow-wrap: anywhere; }
 .info-panel { background: linear-gradient(155deg, #121f28e6, #0d1620d9); border: 1px solid #293c46; border-radius: 12px; overflow: hidden; }

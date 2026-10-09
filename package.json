@@ -1,6 +1,6 @@
 {
   "name": "cryptnest",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "description": "在浏览器内加密、解密和打包文件的开源应用",
@@ -15,8 +15,9 @@
     "preview": "vite preview --host 127.0.0.1 --port 4173"
   },
   "dependencies": {
+    "@noble/ciphers": "2.4.0",
     "fflate": "0.8.3",
-    "lucide": "1.53.0"
+    "lucide": "1.54.0"
   },
   "devDependencies": {
     "@types/node": "26.6.4",
