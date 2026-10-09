@@ -1,6 +1,6 @@
 {
   "name": "cryptnest",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "private": true,
   "type": "module",
   "description": "在浏览器内加密、解密和打包文件的开源应用",
