@@ -2,7 +2,7 @@ import './style.css';
 import {
   Archive, Box, Check, CheckCheck, CircleAlert, CodeXml, Copy, Download, Eye, EyeOff,
   File, FileCheck2, Files, FileText, FolderLock, FolderUp, Info, KeyRound, LockKeyhole,
-  Monitor, Plus, ShieldCheck, Sparkles, TextCursorInput, UnlockKeyhole, X,
+  Monitor, Moon, Plus, ShieldCheck, Sun, Sparkles, TextCursorInput, UnlockKeyhole, X,
   createElement, createIcons,
 } from 'lucide';
 import CryptoWorker from './crypto.worker?worker&inline';
@@ -10,7 +10,7 @@ import { decodeCiphertext, encodeCiphertext, MAX_CIPHER_BYTES, MAX_FILE_BYTES, M
 import type { ArchiveInput, JobRequest, JobResponse } from './crypto';
 
 const initialHTML = '<!doctype html>\n' + document.documentElement.outerHTML;
-const icons = { Archive, Box, Check, CheckCheck, CircleAlert, CodeXml, Copy, Download, Eye, EyeOff, File, FileCheck2, Files, FileText, FolderLock, FolderUp, Info, KeyRound, LockKeyhole, Monitor, Plus, ShieldCheck, Sparkles, TextCursorInput, UnlockKeyhole, X };
+const icons = { Archive, Box, Check, CheckCheck, CircleAlert, CodeXml, Copy, Download, Eye, EyeOff, File, FileCheck2, Files, FileText, FolderLock, FolderUp, Info, KeyRound, LockKeyhole, Monitor, Moon, Plus, ShieldCheck, Sun, Sparkles, TextCursorInput, UnlockKeyhole, X };
 createIcons({ icons });
 
 function element<T extends HTMLElement = HTMLElement>(id: string): T {
@@ -18,6 +18,36 @@ function element<T extends HTMLElement = HTMLElement>(id: string): T {
   if (!result) throw new Error(`缺少界面元素：${id}`);
   return result as T;
 }
+
+type ThemePreference = 'system' | 'light' | 'dark';
+const systemTheme = window.matchMedia('(prefers-color-scheme: light)');
+const themeButtons = document.querySelectorAll<HTMLButtonElement>('button[data-theme-preference]');
+
+function applyTheme(preference: ThemePreference): void {
+  const theme = preference === 'system' ? (systemTheme.matches ? 'light' : 'dark') : preference;
+  document.documentElement.dataset.themePreference = preference;
+  document.documentElement.dataset.theme = theme;
+  for (const button of themeButtons) {
+    const active = button.dataset.themePreference === preference;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-pressed', String(active));
+  }
+  for (const meta of document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')) {
+    meta.media = meta.content === (theme === 'light' ? '#f3f7f6' : '#080e16') ? 'all' : 'not all';
+  }
+}
+
+for (const button of themeButtons) {
+  button.addEventListener('click', () => {
+    const preference = button.dataset.themePreference as ThemePreference;
+    applyTheme(preference);
+    try { localStorage.setItem('cryptnest-theme', preference); } catch {}
+  });
+}
+systemTheme.addEventListener('change', () => {
+  if (document.documentElement.dataset.themePreference === 'system') applyTheme('system');
+});
+applyTheme(document.documentElement.dataset.themePreference as ThemePreference);
 
 const form = element<HTMLFormElement>('crypto-form');
 const fileInput = element<HTMLInputElement>('file-input');

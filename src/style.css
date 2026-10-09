@@ -45,6 +45,11 @@ svg { width: 20px; height: 20px; flex-shrink: 0; stroke-width: 1.7; }
 .nav-link.active::after { content: ''; height: 2px; background: var(--accent); position: absolute; bottom: -20px; left: 0; right: 0; }
 .github-link { display: flex; align-items: center; gap: 8px; }
 .github-link svg { width: 17px; height: 17px; }
+.theme-switch { display: flex; gap: 2px; padding: 3px; flex-shrink: 0; border: 1px solid #293944; background: #0a131c; border-radius: 7px; }
+.theme-button { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 9px; color: #91a0b1; background: transparent; border: 1px solid transparent; border-radius: 4px; font-size: .8125rem; white-space: nowrap; }
+.theme-button svg { width: 16px; height: 16px; }
+.theme-button:hover { color: #e8f0f7; background: #1b2934; }
+.theme-button.is-active { color: var(--accent); background: #203c34; border-color: #79efbd25; }
 .offline-button { display: flex; gap: 8px; align-items: center; border: 1px solid #2a3945; background: #121d27; font-size: .875rem; padding: 10px 14px; border-radius: 6px; color: #c2d0dc; }
 .offline-button:hover { background: #1b2b36; border-color: #617487; }
 .offline-button svg { width: 16px; height: 16px; }
@@ -220,18 +225,18 @@ body[data-mode='decrypt'] .submit-button { background: #a5cfff; border-color: #b
 body[data-mode='decrypt'] .submit-button:hover { background: #c1deff; }
 body[data-mode='decrypt'] .button-shortcut { color: #315376; border-color: #47779c52; }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color-scheme: light;
-    color: #172d39;
-    background: #f3f7f6;
-    --accent: #15734f;
-    --accent-dim: #e7f4ee;
-    --muted: #526575;
-    --line: #d9e4e4;
-    --panel: #ffffff;
-  }
+:root[data-theme='light'] {
+  color-scheme: light;
+  color: #172d39;
+  background: #f3f7f6;
+  --accent: #15734f;
+  --accent-dim: #e7f4ee;
+  --muted: #526575;
+  --line: #d9e4e4;
+  --panel: #ffffff;
+}
 
+:where(:root[data-theme='light']) {
   body { background: radial-gradient(ellipse at 78% 35%, #d5eadd70, transparent 45%), radial-gradient(ellipse at 15% 5%, #dfeaf470, transparent 40%), #f3f7f6; }
   body::before { background-image: linear-gradient(#50756806 1px, transparent 1px), linear-gradient(90deg, #50756806 1px, transparent 1px); }
   .skip-link { color: #ffffff; }
@@ -245,6 +250,10 @@ body[data-mode='decrypt'] .button-shortcut { color: #315376; border-color: #4777
   .nav-link:hover, .nav-link.active { color: #172d39; }
   .offline-button { background: #f1f6f4; border-color: #cddcd5; color: #354f43; }
   .offline-button:hover { background: #e4eee8; border-color: #8ca799; }
+  .theme-switch { background: #e9f0ed; border-color: #d3dfda; }
+  .theme-button { color: var(--muted); }
+  .theme-button:hover { color: #2e4f40; background: #ddeae3; }
+  .theme-button.is-active { color: var(--accent); background: #deeee5; border-color: #b5d7c5; }
   .eyebrow, .local-label > svg, .info-code, .flow-order { color: #526f61; }
   .local-label strong { color: #2f4d3e; }
   .tool-panel { background: linear-gradient(145deg, #ffffff, #fbfdfc); border-color: #cddcd5; box-shadow: 0 16px 70px #25493c0a; }
@@ -337,6 +346,8 @@ body[data-mode='decrypt'] .button-shortcut { color: #315376; border-color: #4777
   .tool-body, .panel-toolbar { padding: 22px; }
   .header-nav { gap: 22px; }
   .header-inner { gap: 25px; }
+  .theme-button { width: 32px; height: 32px; padding: 5px; }
+  .theme-button > span { display: none; }
   .toolbar-caption { display: none; }
   .password-grid { grid-template-columns: 1fr; gap: 14px; }
   .info-top, .info-intro, .info-footer { padding-left: 18px; padding-right: 18px; }
@@ -384,10 +395,16 @@ body[data-mode='decrypt'] .button-shortcut { color: #315376; border-color: #4777
   .info-footer { grid-column: 1 / -1; padding: 14px 20px; }
   .page-footer { font-size: .75rem; flex-wrap: wrap; gap: 10px; }
 }
+@media (max-width: 600px) {
+  .header-inner { display: grid; grid-template-columns: 1fr auto auto; padding-top: 14px; padding-bottom: 10px; gap: 12px; }
+  .header-nav { grid-row: 2; grid-column: 1 / -1; justify-content: flex-end; margin-left: 0; }
+}
 @media (max-width: 440px) {
   .header-inner, .page-shell { padding-left: 17px; padding-right: 17px; }
-  .header-inner { gap: 15px; }
+  .header-inner { gap: 10px; }
   .header-nav { gap: 15px; }
+  .theme-button { width: 28px; height: 30px; }
+  .offline-button { padding: 9px 8px; }
   .brand { gap: 8px; }
   .brand-name { font-size: 21px; }
   .nav-link { font-size: .8125rem; }

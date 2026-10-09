@@ -6,6 +6,19 @@
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#f3f7f6" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#080e16" media="(prefers-color-scheme: dark)" />
+    <script>
+      (() => {
+        let preference = 'system';
+        try {
+          const saved = localStorage.getItem('cryptnest-theme');
+          if (saved === 'light' || saved === 'dark') preference = saved;
+        } catch {}
+        document.documentElement.dataset.themePreference = preference;
+        document.documentElement.dataset.theme = preference === 'system'
+          ? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+          : preference;
+      })();
+    </script>
     <meta name="description" content="CryptNest：浏览器内的文件与文本加密工具，支持密码加密、解密、文件夹打包和离线使用。" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230c1720'/%3E%3Cpath d='M32 9 52 20v24L32 55 12 44V20Z' fill='none' stroke='%2379efbd' stroke-width='3'/%3E%3Crect x='23' y='28' width='18' height='16' rx='4' fill='%2379efbd'/%3E%3Cpath d='M26 28v-5a6 6 0 0 1 12 0v5' fill='none' stroke='%2379efbd' stroke-width='3'/%3E%3C/svg%3E" />
     <title>CryptNest · 本地加密工作台</title>
@@ -23,6 +36,11 @@
           <button class="nav-link" type="button" id="help-button">使用说明</button>
           <a class="nav-link github-link" href="https://github.com/liasica/cryptnest" target="_blank" rel="noopener noreferrer"><i data-lucide="code-xml" aria-hidden="true"></i><span>开源代码</span></a>
         </nav>
+        <div class="theme-switch" role="group" aria-label="界面主题">
+          <button class="theme-button is-active" type="button" data-theme-preference="system" aria-label="跟随系统" aria-pressed="true" title="跟随系统"><i data-lucide="monitor" aria-hidden="true"></i><span>跟随系统</span></button>
+          <button class="theme-button" type="button" data-theme-preference="light" aria-label="浅色模式" aria-pressed="false" title="浅色模式"><i data-lucide="sun" aria-hidden="true"></i><span>浅色</span></button>
+          <button class="theme-button" type="button" data-theme-preference="dark" aria-label="深色模式" aria-pressed="false" title="深色模式"><i data-lucide="moon" aria-hidden="true"></i><span>深色</span></button>
+        </div>
         <button class="offline-button" id="offline-button" type="button"><i data-lucide="download" aria-hidden="true"></i><span>下载离线版</span></button>
       </div>
     </header>
