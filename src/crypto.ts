@@ -87,7 +87,7 @@ export type JobRequest =
 export type JobResponse =
   | { type: 'progress'; label: string; value: number }
   | { type: 'error'; message: string }
-  | { type: 'result'; kind: ContentKind; data: ArrayBuffer; encrypted: boolean; algorithm: string; password?: string };
+  | { type: 'result'; kind: ContentKind; data: ArrayBuffer; encrypted: boolean; algorithm: string };
 
 export function identifyCiphertext(data: ArrayBuffer): 'automatic' | 'password' | null {
   const bytes = new Uint8Array(data);
@@ -171,7 +171,7 @@ export async function encryptContent(
   data: Uint8Array<ArrayBuffer>,
   kind: ContentKind,
   progress: (label: string, value: number) => void = () => {},
-): Promise<{ data: ArrayBuffer; password: string; algorithm: string }> {
+): Promise<{ data: ArrayBuffer; algorithm: string }> {
   const candidates = getAvailableAlgorithms();
   if (!candidates.some((algorithm) => algorithm.id === 1)) {
     throw new UnsupportedAlgorithmError('当前浏览器不支持密钥封装，请使用最新版浏览器。');
@@ -218,8 +218,7 @@ export async function encryptContent(
     output.set(header);
     output.set(ciphertext, header.length);
     output.set(footer, header.length + ciphertext.length);
-    const password = btoa(String.fromCharCode(...rawKey)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-    return { data: output.buffer, password, algorithm: algorithm.name };
+    return { data: output.buffer, algorithm: algorithm.name };
   } finally {
     rawKey.fill(0);
     metadata.fill(0);

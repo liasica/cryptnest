@@ -58,7 +58,6 @@ const folderInput = element<HTMLInputElement>('folder-input');
 const dropzone = element('dropzone');
 const sourceText = element<HTMLTextAreaElement>('source-text');
 const password = element<HTMLInputElement>('password');
-const copyPassword = element<HTMLInputElement>('copy-password');
 const resultText = element<HTMLTextAreaElement>('result-text');
 const resultPanel = element('result-panel');
 const helpDialog = element<HTMLDialogElement>('help-dialog');
@@ -79,8 +78,6 @@ let worker: Worker | null = null;
 let operation = 0;
 let resultBlob: Blob | null = null;
 let resultFilename = '';
-let resultCopyText = '';
-let resultPassword: string | null = null;
 let needsPassword = false;
 let toastTimer: ReturnType<typeof setTimeout>;
 
@@ -106,11 +103,6 @@ function showError(message: string, field?: HTMLElement): void {
 function invalidateResult(): void {
   resultBlob = null;
   resultFilename = '';
-  resultCopyText = '';
-  resultPassword = null;
-  copyPassword.checked = false;
-  element('copy-options').hidden = true;
-  element('copy-password-note').hidden = true;
   resultText.value = '';
   resultPanel.hidden = true;
   element('error-message').hidden = true;
@@ -250,7 +242,7 @@ function renderMode(): void {
   replaceIcon('drop-icon', encrypting ? FolderUp : FolderLock);
   element('text-label').textContent = encrypting ? '需要加密的文本' : '需要解密的密文';
   sourceText.placeholder = encrypting ? '在这里输入需要加密的文本……' : '粘贴完整密文，或包含密码的复制内容……';
-  element('text-hint').textContent = encrypting ? '保留原始文本与换行' : '支持分行密文与附带密码的内容';
+  element('text-hint').textContent = encrypting ? '保留原始文本与换行' : '支持分行密文';
   element('key-info').hidden = !encrypting;
   element('submit-label').textContent = encrypting ? (source === 'files' ? '加密并生成文件' : '加密文本') : (source === 'files' ? '解密并还原内容' : '解密文本');
   replaceIcon('submit-icon', encrypting ? LockKeyhole : UnlockKeyhole);
@@ -394,13 +386,6 @@ sourceText.addEventListener('input', () => {
 password.addEventListener('input', invalidateResult);
 element('toggle-password').addEventListener('click', () => { setPasswordVisibility(password.type === 'password'); });
 
-function updateCopyContent(): void {
-  const includePassword = copyPassword.checked && resultPassword !== null;
-  resultText.value = includePassword ? `${resultCopyText}\n密码：${resultPassword}` : resultCopyText;
-  element('copy-password-note').hidden = !includePassword;
-}
-copyPassword.addEventListener('change', updateCopyContent);
-
 function setBusy(value: boolean): void {
   busy = value;
   for (const control of form.querySelectorAll<HTMLInputElement | HTMLButtonElement | HTMLTextAreaElement>('button, input, textarea')) {
@@ -437,11 +422,7 @@ function displayResult(message: Extract<JobResponse, { type: 'result' }>): void 
   element('result-description').textContent = `${resultFilename} · ${formatBytes(message.data.byteLength)}`;
   resultText.hidden = !text;
   element('copy-result').hidden = !text;
-  resultCopyText = text ? (encrypted ? encodeCiphertext(message.data) : new TextDecoder('utf-8', { fatal: true }).decode(message.data)) : '';
-  resultPassword = text && encrypted ? message.password ?? null : null;
-  copyPassword.checked = false;
-  element('copy-options').hidden = resultPassword === null;
-  updateCopyContent();
+  resultText.value = text ? (encrypted ? encodeCiphertext(message.data) : new TextDecoder('utf-8', { fatal: true }).decode(message.data)) : '';
   element('download-label').textContent = encrypted ? '下载加密包' : text ? '下载文本' : '下载 ZIP 文件';
   element('copy-label').textContent = encrypted ? '复制密文' : '复制文本';
   resultPanel.hidden = false;
@@ -536,7 +517,7 @@ element('download-result').addEventListener('click', () => { if (resultBlob) dow
 element('copy-result').addEventListener('click', async () => {
   try {
     await navigator.clipboard.writeText(resultText.value);
-    showToast(copyPassword.checked && resultPassword !== null ? '密文和密码已复制。' : '已复制。');
+    showToast('已复制。');
   } catch {
     resultText.focus();
     resultText.select();

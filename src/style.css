@@ -173,9 +173,6 @@ progress::-moz-progress-bar { background: var(--accent); }
 .result-download:hover { background: var(--primary-hover); }
 .copy-button { background: #28325b; color: #d5dcff; border: 1px solid #49578b; }
 .copy-button:hover { background: #3b4878; }
-.copy-password-option { display: inline-flex; align-items: center; gap: 7px; padding: 9px 2px; cursor: pointer; font-size: .875rem; }
-.copy-password-option input { width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
-.copy-password-note { font-size: .8125rem; color: var(--muted); margin: 12px 0 0; line-height: 1.7; }
 .result-download svg, .copy-button svg { width: 16px; height: 16px; }
 .result-text { width: 100%; margin-top: 16px; min-height: 130px; resize: vertical; border: 1px solid #454f81; border-radius: 5px; background: #101831; color: #dce2fc; padding: 12px; font-family: 'SFMono-Regular', Consolas, 'PingFang SC', monospace; font-size: .875rem; line-height: 1.8; overflow-wrap: anywhere; }
 .info-panel { background: linear-gradient(155deg, #161e34e6, #10172ad9); border: 1px solid #323c5a; border-radius: 12px; overflow: hidden; }
