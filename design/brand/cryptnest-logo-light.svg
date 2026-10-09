@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="brand-logo" width="897" height="148" viewBox="0 0 897 148" color="#172d39" role="img" aria-label="CryptNest">
+  <g class="brand-icon" transform="translate(6 8) scale(.88)" color="#ffffff">
+    <path d="M126 64C126 72.116 126.204 80.326 125.552 89.496C124.9 98.665 122.96 109.311 116.136 116.136C109.311 122.96 98.665 124.9 89.496 125.552C80.326 126.204 72.116 126 64 126C55.884 126 47.674 126.204 38.504 125.552C29.335 124.9 18.689 122.96 11.864 116.136C5.04 109.311 3.1 98.665 2.448 89.496C1.796 80.326 2 72.116 2 64C2 55.884 1.796 47.674 2.448 38.504C3.1 29.335 5.04 18.689 11.864 11.864C18.689 5.04 29.335 3.1 38.504 2.448C47.674 1.796 55.884 2 64 2C72.116 2 80.326 1.796 89.496 2.448C98.665 3.1 109.311 5.04 116.136 11.864C122.96 18.689 124.9 29.335 125.552 38.504C126.204 47.674 126 55.884 126 64Z" fill="#5c6bf2"/>
+    <g transform="translate(12 12) scale(.8125)" color="#ffffff">
+      <path d="m92 30-28-16-44 25v50l44 25 44-25V57" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="m83 49-19-11-22 13v26l22 13 22-13" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+  <g transform="translate(140 0)" fill="currentColor" fill-rule="evenodd">
+    <path data-letter="C" transform="translate(0 0)" d="M80 33A46 46 0 1 0 80 95L65 81A26 26 0 1 1 65 47Z"/>
+    <path data-letter="r" transform="translate(96 0)" d="M0 108V68C0 51 12 40 30 40H50L36 58H31C24 58 20 63 20 70V108Z"/>
+    <path data-letter="y" transform="translate(158 0)" d="M0 40H21V75C21 85 27 91 37 91S53 85 53 75V40H74V89C74 117 58 132 32 132H16L31 113H33C44 113 51 108 53 98C48 104 40 108 29 108C10 108 0 95 0 76Z"/>
+    <path data-letter="p" transform="translate(244 0)" d="M0 132V40H20V47C27 41 35 39 44 39C64 39 79 54 79 74S64 109 44 109C34 109 26 106 20 101V132ZM59 74A16 16 0 1 0 27 74A16 16 0 1 0 59 74Z"/>
+    <path data-letter="t" transform="translate(335 0)" d="M12 36L32 24V40H58L40 58H32V80C32 86 36 90 43 90H56V108H39C20 108 12 99 12 82V58H0V40H12Z"/>
+    <path data-letter="N" transform="translate(410 0)" d="M0 108V18H20L71 78V18H92V108H72L21 48V108Z"/>
+    <path data-letter="e" transform="translate(514 0)" d="M74 93L60 81C55 88 48 92 39 92C28 92 22 87 20 78H77V72C77 52 61 38 39 38C17 38 0 53 0 74C0 96 17 110 39 110C54 110 66 105 74 93ZM20 63H57C54 55 48 52 39 52C30 52 24 55 20 63Z"/>
+    <path data-letter="s" transform="translate(603 0)" d="M66 44L55 58C50 55 44 53 37 53C28 53 23 56 23 60C23 64 28 65 39 68C60 73 70 79 70 92C70 103 58 111 36 111C22 111 10 107 0 100L13 86C20 92 28 95 37 95C45 95 50 92 50 88C50 84 45 82 33 79C12 74 3 68 3 56C3 45 16 37 37 37C49 37 58 39 66 44Z"/>
+    <path data-letter="t" transform="translate(685 0)" d="M12 36L32 24V40H58L40 58H32V80C32 86 36 90 43 90H56V108H39C20 108 12 99 12 82V58H0V40H12Z"/>
+  </g>
+</svg>

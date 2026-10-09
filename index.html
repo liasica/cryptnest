@@ -20,7 +20,7 @@
       })();
     </script>
     <meta name="description" content="CryptNest：浏览器内的文件与文本加密工具，支持随机密钥加密、自动解密、文件夹打包和离线使用。" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230c1720'/%3E%3Cpath d='M32 9 52 20v24L32 55 12 44V20Z' fill='none' stroke='%2379efbd' stroke-width='3'/%3E%3Crect x='23' y='28' width='18' height='16' rx='4' fill='%2379efbd'/%3E%3Cpath d='M26 28v-5a6 6 0 0 1 12 0v5' fill='none' stroke='%2379efbd' stroke-width='3'/%3E%3C/svg%3E" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22128%22%20height%3D%22128%22%20viewBox%3D%220%200%20128%20128%22%20color%3D%22%23ffffff%22%20role%3D%22img%22%20aria-label%3D%22CryptNest%EF%BC%9A%E8%B6%85%E6%A4%AD%E5%9C%86%E5%9B%BE%E6%A0%87%22%3E%3Cpath%20d%3D%22M126%2064C126%2072.116%20126.204%2080.326%20125.552%2089.496C124.9%2098.665%20122.96%20109.311%20116.136%20116.136C109.311%20122.96%2098.665%20124.9%2089.496%20125.552C80.326%20126.204%2072.116%20126%2064%20126C55.884%20126%2047.674%20126.204%2038.504%20125.552C29.335%20124.9%2018.689%20122.96%2011.864%20116.136C5.04%20109.311%203.1%2098.665%202.448%2089.496C1.796%2080.326%202%2072.116%202%2064C2%2055.884%201.796%2047.674%202.448%2038.504C3.1%2029.335%205.04%2018.689%2011.864%2011.864C18.689%205.04%2029.335%203.1%2038.504%202.448C47.674%201.796%2055.884%202%2064%202C72.116%202%2080.326%201.796%2089.496%202.448C98.665%203.1%20109.311%205.04%20116.136%2011.864C122.96%2018.689%20124.9%2029.335%20125.552%2038.504C126.204%2047.674%20126%2055.884%20126%2064Z%22%20fill%3D%22%235c6bf2%22%2F%3E%3Cg%20transform%3D%22translate%2812%2012%29%20scale%28.8125%29%22%20color%3D%22%23ffffff%22%3E%3Cpath%20d%3D%22m92%2030-28-16-44%2025v50l44%2025%2044-25V57%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%2210%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22m83%2049-19-11-22%2013v26l22%2013%2022-13%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%2210%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E" />
     <title>CryptNest · 本地加密工作台</title>
   </head>
   <body>
@@ -28,8 +28,7 @@
     <header class="site-header">
       <div class="header-inner">
         <a class="brand" href="#workspace" aria-label="CryptNest 工作台">
-          <span class="brand-mark"><i data-lucide="box" aria-hidden="true"></i></span>
-          <span class="brand-name">Crypt<span>Nest</span></span>
+          <span class="brand-logo-slot" id="brand-logo"></span>
         </a>
         <nav class="header-nav" aria-label="主导航">
           <a class="nav-link active" href="#workspace" aria-current="page">工作台</a>

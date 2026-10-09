@@ -1,5 +1,10 @@
 # CryptNest
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="src/assets/cryptnest-logo.svg" />
+  <img src="design/brand/cryptnest-logo-light.svg" alt="CryptNest" width="360" />
+</picture>
+
 浏览器端的文件与文本加密应用。
 
 [在线使用](https://liasica.github.io/cryptnest/) · [下载离线版](https://liasica.github.io/cryptnest/cryptnest-offline.html) · [MIT 许可证](LICENSE)

@@ -1,4 +1,5 @@
 import './style.css';
+import brandLogo from './assets/cryptnest-logo.svg?raw';
 import {
   Archive, Box, Check, CircleAlert, CodeXml, Copy, Download, Eye, EyeOff,
   File, FileCheck2, Files, FileText, FolderLock, FolderUp, Info, KeyRound, LockKeyhole,
@@ -18,6 +19,8 @@ function element<T extends HTMLElement = HTMLElement>(id: string): T {
   if (!result) throw new Error(`缺少界面元素：${id}`);
   return result as T;
 }
+
+element('brand-logo').innerHTML = brandLogo;
 
 type ThemePreference = 'system' | 'light' | 'dark';
 const systemTheme = window.matchMedia('(prefers-color-scheme: light)');
