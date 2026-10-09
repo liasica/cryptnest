@@ -36,7 +36,7 @@ function applyTheme(preference: ThemePreference): void {
     button.setAttribute('aria-pressed', String(active));
   }
   for (const meta of document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')) {
-    meta.media = meta.content === (theme === 'light' ? '#f3f7f6' : '#080e16') ? 'all' : 'not all';
+    meta.media = meta.content === (theme === 'light' ? '#f5f6fc' : '#0b1020') ? 'all' : 'not all';
   }
 }
 
