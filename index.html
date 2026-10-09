@@ -111,7 +111,7 @@
               <div class="message error-message" id="error-message" role="alert" hidden><i data-lucide="circle-alert" aria-hidden="true"></i><span id="error-text"></span></div>
               <div class="progress-section" id="progress-section" role="status" aria-live="polite" hidden><div class="progress-heading"><span id="progress-label">准备处理……</span><button type="button" class="text-button" id="cancel-button">取消</button></div><progress id="progress-bar" max="100" value="5" aria-label="处理进度"></progress></div>
 
-              <button class="submit-button" id="submit-button" type="submit"><i data-lucide="lock-keyhole" id="submit-icon" aria-hidden="true"></i><span id="submit-label">加密并生成文件</span><span class="button-shortcut" aria-hidden="true">XChaCha20</span></button>
+              <button class="submit-button" id="submit-button" type="submit"><i data-lucide="lock-keyhole" id="submit-icon" aria-hidden="true"></i><span id="submit-label">加密并生成文件</span></button>
               <div class="output-hint"><i data-lucide="file-check-2" aria-hidden="true"></i><span id="output-hint">输出 .cryptnest 加密包，解密后得到 ZIP 文件</span></div>
 
               <section class="result-panel" id="result-panel" aria-label="处理结果" aria-live="polite" hidden>
@@ -126,11 +126,10 @@
 
         <aside class="info-panel" aria-label="处理方式与文件格式">
           <div class="info-top"><span>处理方式</span><span class="info-code">LOCAL / 01</span></div>
-          <div class="encryption-visual" aria-hidden="true"><div class="visual-grid"></div><div class="orbit orbit-outer"></div><div class="orbit orbit-middle"></div><div class="orbit orbit-inner"></div><span class="orbit-node node-one"></span><span class="orbit-node node-two"></span><div class="visual-core"><i data-lucide="shield-check"></i></div><span class="visual-caption">XChaCha<span>20</span></span></div>
+          <div class="encryption-visual" aria-hidden="true"><div class="visual-grid"></div><div class="orbit orbit-outer"></div><div class="orbit orbit-middle"></div><div class="orbit orbit-inner"></div><span class="orbit-node node-one"></span><span class="orbit-node node-two"></span><div class="visual-core"><i data-lucide="shield-check"></i></div></div>
           <div class="info-intro"><h2 id="flow-title">文件的加密流程</h2><p id="flow-description">文件与目录结构一起打包，整个归档使用随机密钥加密。</p></div>
           <ol class="flow-list" id="flow-list"><li><span class="flow-icon"><i data-lucide="files" aria-hidden="true"></i></span><span>选择文件<strong>保留文件名与目录</strong></span><span class="flow-order">01</span></li><li><span class="flow-icon"><i data-lucide="archive" aria-hidden="true"></i></span><span>自动打包<strong>生成 ZIP 归档</strong></span><span class="flow-order">02</span></li><li><span class="flow-icon"><i data-lucide="lock-keyhole" aria-hidden="true"></i></span><span>随机密钥加密<strong>下载 .cryptnest 文件</strong></span><span class="flow-order">03</span></li></ol>
           <div class="format-note"><i data-lucide="info" aria-hidden="true"></i><p id="format-note">持有完整加密结果，即可使用本应用解密。</p></div>
-          <div class="info-footer"><span>加密算法</span><strong>XChaCha20-Poly1305</strong></div>
         </aside>
       </div>
 
