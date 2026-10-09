@@ -46,7 +46,7 @@ svg { width: 20px; height: 20px; flex-shrink: 0; stroke-width: 1.7; }
 .github-link { display: flex; align-items: center; gap: 8px; }
 .github-link svg { width: 17px; height: 17px; }
 .theme-switch { display: flex; gap: 2px; padding: 3px; flex-shrink: 0; border: 1px solid #293944; background: #0a131c; border-radius: 7px; }
-.theme-button { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 9px; color: #91a0b1; background: transparent; border: 1px solid transparent; border-radius: 4px; font-size: .8125rem; white-space: nowrap; }
+.theme-button { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 5px; color: #91a0b1; background: transparent; border: 1px solid transparent; border-radius: 4px; }
 .theme-button svg { width: 16px; height: 16px; }
 .theme-button:hover { color: #e8f0f7; background: #1b2934; }
 .theme-button.is-active { color: var(--accent); background: #203c34; border-color: #79efbd25; }
@@ -353,8 +353,6 @@ body[data-mode='decrypt'] .button-shortcut { color: #315376; border-color: #4777
   .tool-body, .panel-toolbar { padding: 22px; }
   .header-nav { gap: 22px; }
   .header-inner { gap: 25px; }
-  .theme-button { width: 32px; height: 32px; padding: 5px; }
-  .theme-button > span { display: none; }
   .toolbar-caption { display: none; }
   .password-grid { grid-template-columns: 1fr; gap: 14px; }
   .info-top, .info-intro, .info-footer { padding-left: 18px; padding-right: 18px; }
